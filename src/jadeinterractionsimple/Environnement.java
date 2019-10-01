@@ -41,6 +41,15 @@ public class Environnement {
         GUI.validate();
 
     }
+    public void createGraph(int sizeGrid){
+//        List<Node> lst= new 
+//        for(int i=0 ; i<sizeGrid; i++){
+//            for(int j=0 ; j<sizeGrid; j++){
+//            
+//            }
+//        }
+        
+    }
  synchronized void setFormeOKNOK(String forme, boolean state){
         EndPos_Forme.remove(forme);
         EndPos_Forme.put(forme, state);

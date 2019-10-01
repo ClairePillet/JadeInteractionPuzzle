@@ -37,22 +37,7 @@ public class FormeAgent extends Agent{
         
         addBehaviour(new Routine());
     }
-       public boolean move (Position futurePos){
-             //check if case is free
-             Map.Entry  caseTest =env.caseIsfree(futurePos);
-            if(caseTest==null){
-                //move
-                env.move_forme(forme, futurePos);
-                posBegin=futurePos;
-                return true;
-            }
-            //or ask for message 
-            ACLMessage move = new ACLMessage(ACLMessage.PROPOSE);
-            move.addReceiver((AID)caseTest.getValue());
-             move.setContent("Move");
-            myAgent.send(move);
-            return false;
-        }
+    
      public class Routine extends CyclicBehaviour {
         public void action() {
             //check grid is ok
@@ -92,7 +77,14 @@ public class FormeAgent extends Agent{
                               System.out.println(getLocalName() +" y+1"+haveMove);
                      }
                  }
-                 
+//                 if(haveMove==false){
+//                       //or ask for message 
+//                        ACLMessage move = new ACLMessage(ACLMessage.PROPOSE);
+//                        move.addReceiver((AID)caseTest.getValue());
+//                         move.setContent("Move");
+//                        myAgent.send(move);
+//                                           
+//                 }
              }
              else{
 //                setFormeOKNOK //get message if someone want him to move
@@ -110,7 +102,17 @@ public class FormeAgent extends Agent{
             }
         }
         
-     
+        public boolean move (Position futurePos){
+             //check if case is free
+             Map.Entry  caseTest =env.caseIsfree(futurePos);
+            if(caseTest==null){
+                //move
+                env.move_forme(forme, futurePos);
+                posBegin=futurePos;
+                return true;
+            }
+          return false;
+        }
      }
 
 }
