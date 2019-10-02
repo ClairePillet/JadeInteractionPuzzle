@@ -6,12 +6,15 @@
 package jadeinterractionsimple;
 
 import jade.core.AID;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -27,6 +30,7 @@ public class Environnement {
     private Integer[] position_C; 
     private Integer[] position_D; 
    private Gui GUI = new Gui();
+   private Graph g;
     //private gui_musee GUI = new gui_musee();
     boolean verbose = false;
 
@@ -42,13 +46,89 @@ public class Environnement {
 
     }
     public void createGraph(int sizeGrid){
-//        List<Node> lst= new 
-//        for(int i=0 ; i<sizeGrid; i++){
-//            for(int j=0 ; j<sizeGrid; j++){
-//            
-//            }
-//        }
+         g = new Graph();
+        ArrayList<Node> lst= new  ArrayList<Node>();
+        for(int i=0 ; i<sizeGrid; i++){
+            for(int j=0 ; j<sizeGrid; j++){
+                Position p= new Position(i,j);
+                Node n = new Node(p);
+                lst.add(n);
+            }
+        }
         
+        for(Node n : lst){
+            int iMax=0;
+            for(Node nAdj : lst){
+                Position posAdj =nAdj.getPos(), pos =n.getPos();
+                        
+                if(!pos.equals(posAdj)){
+                    if(posAdj.getX()>=pos.getX()-1 && posAdj.getX()<=pos.getX()+1 && posAdj.getY()>=pos.getY()-1 && posAdj.getY()<=pos.getY()+1){
+                        n.addNodeAdj(nAdj);
+                        iMax++;
+                    }
+                    if(iMax==4){
+                        break;
+                    }
+                }
+            }
+            g.addNode(n);
+        }
+    }
+    public List<Position> aStarSearch(Position start, Position goal)
+    {
+ 
+        Node startNode = g.getNode(start);
+        Node endNode = g.getNode(goal);
+ 
+        // setup for A*
+        HashMap<Node,Node> parentMap = new HashMap<Node,Node>();
+        HashSet<Node> visited = new HashSet<Node>();
+        Map<Node, Double> distances = initializeAllToInfinity();
+ 
+        Queue<Node> priorityQueue = initQueue();
+ 
+        //  enque StartNode, with distance 0
+        startNode.setDistanceToStart(new Double(0));
+        distances.put(startNode, new Double(0));
+        priorityQueue.add(startNode);
+        Node current = null;
+ 
+        while (!priorityQueue.isEmpty()) {
+            current = priorityQueue.remove();
+ 
+            if (!visited.contains(current) ){
+                visited.add(current);
+                // if last element in PQ reached
+                if (current.equals(endNode)) return reconstructPath(parentMap, startNode, endNode, 0);
+ 
+                Set<Node> neighbors = getNeighbors(current);
+                for (Node neighbor : neighbors) {
+                    if (!visited.contains(neighbor) ){  
+ 
+                        // calculate predicted distance to the end node
+                        double predictedDistance = neighbor.getLocation().distance(endNode.getLocation());
+ 
+                        // 1. calculate distance to neighbor. 2. calculate dist from start node
+                        double neighborDistance = current.calculateDistance(neighbor);
+                        double totalDistance = current.getDistanceToStart() + neighborDistance + predictedDistance;
+ 
+                        // check if distance smaller
+                        if(totalDistance < distances.get(neighbor) ){
+                            // update n's distance
+                            distances.put(neighbor, totalDistance);
+                            // used for PriorityQueue
+                            neighbor.setDistanceToStart(totalDistance);
+                            neighbor.setPredictedDistance(predictedDistance);
+                            // set parent
+                            parentMap.put(neighbor, current);
+                            // enqueue
+                            priorityQueue.add(neighbor);
+                        }
+                    }
+                }
+            }
+        }
+        return null;
     }
  synchronized void setFormeOKNOK(String forme, boolean state){
         EndPos_Forme.remove(forme);
