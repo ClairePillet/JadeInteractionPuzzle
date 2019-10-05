@@ -48,10 +48,10 @@ public class Gui extends JFrame {
     private void jbInit() throws Exception {
 
         dbImage = ImageIO.read(new File("test.jpg"));
-        dbImageA = ImageIO.read(new File("A.png"));
-        dbImageB = ImageIO.read(new File("b.png"));
-        dbImageC = ImageIO.read(new File("c.jpg"));
-        dbImageD = ImageIO.read(new File("d.jpg"));
+        dbImageA = ImageIO.read(new File("A.jpg"));
+        dbImageB = ImageIO.read(new File("B.jpg"));
+        dbImageC = ImageIO.read(new File("C.jpg"));
+        dbImageD = ImageIO.read(new File("D.jpg"));
         canvas = new painting_area();
         add(canvas);
 
