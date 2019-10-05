@@ -24,6 +24,14 @@ public class Graph {
         nodes.add(nodeA);
     }
 
+     public Node getNode(Position p) {
+            for(Node n : nodes){
+                if(n.getPos().equals(p)){
+                    return n;
+                }
+            }
+        return null;
+    }
     public Set<Node> getNodes() {
         return nodes;
     }

@@ -46,7 +46,27 @@ public class FormeAgent extends Agent{
               System.out.println(getLocalName() +" checkGrid false");
               isGoodPlace=posBegin.equals(posEnd);
              if(isGoodPlace==false){
-                  System.out.println(getLocalName() +" place false");
+                   Position newP= env.aStarSearch(posBegin, posEnd);
+                   move(newP) ;
+                     System.out.println(newP +" a*");
+             }
+             else{
+//                setFormeOKNOK //get message if someone want him to move
+                env.setFormeOKNOK(forme, true);
+                System.out.println(getLocalName() +" is OK");
+             }
+         }
+         else{
+             System.out.println("Finish");
+         }
+         try {
+                Thread.sleep(5000);
+            } catch (InterruptedException e) {
+                System.err.format("IOException : %s%n", e);
+            }
+        }
+        public void itineraireReflexionLow (){
+                System.out.println(getLocalName() +" place false");
                  boolean  haveMove=false;
                  if(posBegin.getX()!=posEnd.getX() && haveMove==false){
                      // move on x
@@ -85,26 +105,11 @@ public class FormeAgent extends Agent{
 //                        myAgent.send(move);
 //                                           
 //                 }
-             }
-             else{
-//                setFormeOKNOK //get message if someone want him to move
-                env.setFormeOKNOK(forme, true);
-                System.out.println(getLocalName() +" is OK");
-             }
-         }
-         else{
-             System.out.println("Finish");
-         }
-         try {
-                Thread.sleep(5000);
-            } catch (InterruptedException e) {
-                System.err.format("IOException : %s%n", e);
-            }
+            
         }
-        
         public boolean move (Position futurePos){
              //check if case is free
-             Map.Entry  caseTest =env.caseIsfree(futurePos);
+             Map.Entry  caseTest =env.caseIsFree(futurePos);
             if(caseTest==null){
                 //move
                 env.move_forme(forme, futurePos);

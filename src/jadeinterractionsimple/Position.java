@@ -5,6 +5,8 @@
  */
 package jadeinterractionsimple;
 
+import static java.lang.Math.abs;
+
 /**
  *
  * @author claire
@@ -17,7 +19,11 @@ public class Position {
         this.x = x;
         this.y = y;
     }
-
+    public int distance(Position p) {
+      
+       return(abs(this.x -p.getX())+abs(this.y -p.getY()));
+     
+    }
     public int getX() {
         return x;
     }
@@ -36,12 +42,11 @@ public class Position {
 
     @Override
     public boolean equals(Object o) {
-//        if(!o.getClass().isInstance(Position.class)){
-//            return false;
-//        }
+          if (getClass() != o.getClass()) {
+            return false;
+        }
         
         Position posToTes= (Position)o;
-         System.out.println(posToTes +" test");
         if(posToTes.getX()==this.x && posToTes.getY()==this.y)
         {
 

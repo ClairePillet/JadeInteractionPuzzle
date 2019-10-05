@@ -8,14 +8,19 @@ package jadeinterractionsimple;
 import jade.core.AID;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.PriorityQueue;
+import java.util.Queue;
+import java.util.Set;
 
 /**
  *
@@ -43,7 +48,7 @@ public class Environnement {
         GUI.setLocation( 700, 20 );
         GUI.setVisible( true );
         GUI.validate();
-
+       createGraph(size_grid);
     }
     public void createGraph(int sizeGrid){
          g = new Graph();
@@ -62,7 +67,7 @@ public class Environnement {
                 Position posAdj =nAdj.getPos(), pos =n.getPos();
                         
                 if(!pos.equals(posAdj)){
-                    if(posAdj.getX()>=pos.getX()-1 && posAdj.getX()<=pos.getX()+1 && posAdj.getY()>=pos.getY()-1 && posAdj.getY()<=pos.getY()+1){
+                    if(((posAdj.getX()==pos.getX()-1 || posAdj.getX()==pos.getX()+1) && posAdj.getY()==pos.getY())|| ((posAdj.getY()==pos.getY()-1 || posAdj.getY()==pos.getY()+1) && posAdj.getX()==pos.getX())){
                         n.addNodeAdj(nAdj);
                         iMax++;
                     }
@@ -74,22 +79,55 @@ public class Environnement {
             g.addNode(n);
         }
     }
-    public List<Position> aStarSearch(Position start, Position goal)
-    {
+    synchronized Map<Node, Integer> initializeAllToInfinity() {
+        Map<Node,Integer> distances = new HashMap<>();
  
+          for(Node n : g.getNodes()){
+          
+            distances.put(n, Integer.MAX_VALUE);
+        }
+        return distances;
+    }
+        synchronized PriorityQueue<Node> initQueue() {
+        return new PriorityQueue<>(10, new Comparator<Node>() {
+            public int compare(Node x, Node y) {
+                if (x.getDistToStart() < y.getDistToStart())
+                {                   return -1;              }               
+                if (x.getDistToStart() > y.getDistToStart())
+                {
+                    return 1;
+                }
+                return 0;
+            };
+        });
+    }
+    synchronized LinkedList<Node>  reconstructPath(Node start, Node goal,
+            Map<Node, Node> parentMap) {
+        // construct output list
+        LinkedList<Node> path = new LinkedList<>();
+        Node currNode = goal;
+        while(!currNode.equals(start)){
+            path.addFirst(currNode);
+            currNode = parentMap.get(currNode);
+        }
+       
+        return path;
+    }
+    synchronized Position aStarSearch(Position start, Position goal)
+    {
         Node startNode = g.getNode(start);
         Node endNode = g.getNode(goal);
  
         // setup for A*
         HashMap<Node,Node> parentMap = new HashMap<Node,Node>();
         HashSet<Node> visited = new HashSet<Node>();
-        Map<Node, Double> distances = initializeAllToInfinity();
+        Map<Node, Integer> distances = initializeAllToInfinity();
  
         Queue<Node> priorityQueue = initQueue();
  
         //  enque StartNode, with distance 0
-        startNode.setDistanceToStart(new Double(0));
-        distances.put(startNode, new Double(0));
+        startNode.setDistToStart(0);
+        distances.put(startNode, 0);
         priorityQueue.add(startNode);
         Node current = null;
  
@@ -99,26 +137,36 @@ public class Environnement {
             if (!visited.contains(current) ){
                 visited.add(current);
                 // if last element in PQ reached
-                if (current.equals(endNode)) return reconstructPath(parentMap, startNode, endNode, 0);
+                if (current.equals(endNode))
+                {
+                    LinkedList<Node> path= reconstructPath( startNode, endNode,parentMap);
+                    
+                        return path.get(0).getPos();
+                    
+                    
+                }
  
-                Set<Node> neighbors = getNeighbors(current);
+                Set<Node> neighbors = current.getAdjnode();
                 for (Node neighbor : neighbors) {
                     if (!visited.contains(neighbor) ){  
  
                         // calculate predicted distance to the end node
-                        double predictedDistance = neighbor.getLocation().distance(endNode.getLocation());
+                        Integer predictedDistance = neighbor.getPos().distance(endNode.getPos());
  
                         // 1. calculate distance to neighbor. 2. calculate dist from start node
-                        double neighborDistance = current.calculateDistance(neighbor);
-                        double totalDistance = current.getDistanceToStart() + neighborDistance + predictedDistance;
+                        Integer neighborDistance =1;
+                        if(caseIsFree(neighbor.getPos())!=null){
+                               neighborDistance =50;
+                        }
+                        Integer totalDistance = current.getDistToStart() + neighborDistance + predictedDistance;
  
                         // check if distance smaller
                         if(totalDistance < distances.get(neighbor) ){
                             // update n's distance
                             distances.put(neighbor, totalDistance);
                             // used for PriorityQueue
-                            neighbor.setDistanceToStart(totalDistance);
-                            neighbor.setPredictedDistance(predictedDistance);
+                            neighbor.setDistToStart(totalDistance);
+                            neighbor.setDistPredicted(predictedDistance);
                             // set parent
                             parentMap.put(neighbor, current);
                             // enqueue
@@ -140,12 +188,13 @@ public class Environnement {
         position_Forme.put(forme, new_position);
         GUI.move_guide(position_Forme);
     }
- synchronized Map.Entry caseIsfree(Position new_position){
+ synchronized Map.Entry caseIsFree(Position new_position){
       
          Iterator i=position_Forme.entrySet().iterator();
         while(i.hasNext()) {
-            Map.Entry ps = (Map.Entry) i.next();
-           if(ps.equals(new_position)==true){
+            Map.Entry ps =(Map.Entry) i.next();
+            Position pos =(Position) ps.getValue();
+           if(pos.equals(new_position)==true){
                
                return ps;
            }
@@ -172,22 +221,22 @@ public class Environnement {
          System.out.println(forme);
         switch(forme){
                 case "A":
-                    p1=new Position (1,0);
-                    p2=new Position (1,0);
+                    p1=new Position (2,0);
+                    p2=new Position (2,0);
                   
                     break;
                 case "B":
-                    p1=new Position (0,1);
-                    p2=new Position (0,1);
+                    p1=new Position (3,0);
+                    p2=new Position (1,0);
                   
                  break;
                 case "C":
-                    p1=new Position (3,1);
-                    p2=new Position (0,0);
+                    p1=new Position (1,2);
+                    p2=new Position (4,0);
                    
                 break; 
                 default:
-                    p1=new Position (1,4);
+                    p1=new Position (2,3);
                     p2=new Position (0,4);
                    
                 break;
