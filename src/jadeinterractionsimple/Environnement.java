@@ -29,7 +29,7 @@ import java.util.Set;
 public class Environnement {
      private Integer size;
       private HashMap<String,AID> aidForms; 
-    private HashMap<String,Position> position_Forme; 
+    volatile HashMap<String,Position> position_Forme; 
     private HashMap<String,Boolean> EndPos_Forme; 
     private Integer[] position_B; 
     private Integer[] position_C; 
@@ -233,6 +233,26 @@ public class Environnement {
                 case "C":
                     p1=new Position (1,2);
                     p2=new Position (4,0);
+                   
+                break; 
+                case "E":
+                    p1=new Position (4,0);
+                    p2=new Position (2,1);
+                  
+                    break;
+                case "F":
+                    p1=new Position (3,2);
+                    p2=new Position (1,2);
+                  
+                 break;
+                case "G":
+                    p1=new Position (1,4);
+                    p2=new Position (3,0);
+                   
+                break; 
+                   case "H":
+                    p1=new Position (3,2);
+                    p2=new Position (4,4);
                    
                 break; 
                 default:

@@ -33,6 +33,10 @@ public class Gui extends JFrame {
      private Image dbImageB; 
      private Image dbImageD;
       private Image dbImageC;
+       private Image dbImageE;
+     private Image dbImageF; 
+     private Image dbImageG;
+      private Image dbImageH;
          private Image dbImage;
      
     private painting_area canvas;
@@ -48,10 +52,15 @@ public class Gui extends JFrame {
     private void jbInit() throws Exception {
 
         dbImage = ImageIO.read(new File("test.jpg"));
-        dbImageA = ImageIO.read(new File("A.jpg"));
+   
+             dbImageA = ImageIO.read(new File("A.jpg"));
         dbImageB = ImageIO.read(new File("B.jpg"));
         dbImageC = ImageIO.read(new File("C.jpg"));
         dbImageD = ImageIO.read(new File("D.jpg"));
+             dbImageE = ImageIO.read(new File("E.jpg"));
+        dbImageF = ImageIO.read(new File("F.jpg"));
+        dbImageG = ImageIO.read(new File("G.jpg"));
+        dbImageH = ImageIO.read(new File("H.jpg"));
         canvas = new painting_area();
         add(canvas);
 
@@ -88,8 +97,7 @@ public class Gui extends JFrame {
             //
            
             g.drawImage(dbImage, 0, 0, getWidth(), getHeight(), this);
-          
-             
+                       
                        //A
              g.drawImage(dbImageA, positions.get("A").getX()*100+25,positions.get("A").getY()*100+25,
                      25, 
@@ -104,11 +112,20 @@ public class Gui extends JFrame {
              g.drawImage(dbImageD, positions.get("D").getX()*100+25,positions.get("D").getY()*100+25, 
                      25, 25, this);
              
+                      //A
+             g.drawImage(dbImageE, positions.get("E").getX()*100+25,positions.get("E").getY()*100+25,
+                     25, 
+                     25, this);
+              //B
+             g.drawImage(dbImageF, positions.get("F").getX()*100+25,positions.get("F").getY()*100+25,
+                     25, 25, this); 
+                //C
+             g.drawImage(dbImageG, positions.get("G").getX()*100+25,positions.get("G").getY()*100+25, 
+                    25, 25, this); 
+            //D
+             g.drawImage(dbImageH, positions.get("H").getX()*100+25,positions.get("H").getY()*100+25, 
+                     25, 25, this);
              
-               
-        
-          
-          
         }
     }
 }
