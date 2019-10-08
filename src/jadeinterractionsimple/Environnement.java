@@ -103,11 +103,8 @@ public class Environnement {
                     return 1;
                 }
                 return 0;
-            }
-        ;
-    }
-
-    );
+            } ;
+        });
     }
     synchronized LinkedList<Node> reconstructPath(Node start, Node goal,
             Map<Node, Node> parentMap) {
@@ -188,13 +185,12 @@ public class Environnement {
     synchronized void setFormeOKNOK(String forme, boolean state) {
         EndPos_Forme.remove(forme);
         EndPos_Forme.put(forme, state);
-
     }
 
     synchronized void move_forme(String forme, Position new_position) {
         position_Forme.remove(forme);
         position_Forme.put(forme, new_position);
-        GUI.move_guide(position_Forme);
+        GUI.moveForme(position_Forme);
     }
 
     synchronized Map.Entry caseIsFree(Position new_position) {
@@ -231,7 +227,7 @@ public class Environnement {
         switch (forme) {
             case "A":
                 p1 = new Position(2, 0);
-                p2 = new Position(2, 0);
+                p2 = new Position(0, 0);
 
                 break;
             case "B":
@@ -241,38 +237,38 @@ public class Environnement {
                 break;
             case "C":
                 p1 = new Position(1, 2);
-                p2 = new Position(4, 0);
+                p2 = new Position(2, 0);
 
                 break;
             case "E":
-                p1 = new Position(4, 0);
-                p2 = new Position(2, 1);
+                p1 = new Position(4, 1);
+                p2 = new Position(4, 0);
 
                 break;
             case "F":
                 p1 = new Position(3, 2);
-                p2 = new Position(1, 2);
+                p2 = new Position(0, 1);
 
                 break;
             case "G":
                 p1 = new Position(1, 4);
-                p2 = new Position(3, 0);
+                p2 = new Position(1, 1);
 
                 break;
             case "H":
                 p1 = new Position(3, 2);
-                p2 = new Position(4, 4);
+                p2 = new Position(2, 1);
 
                 break;
             default:
                 p1 = new Position(2, 3);
-                p2 = new Position(0, 4);
+                p2 = new Position(3, 0);
 
                 break;
         }
         Position[] tab = {p1, p2};
         position_Forme.put(forme, p1);
-        GUI.move_guide(position_Forme);
+        GUI.moveForme(position_Forme);
         EndPos_Forme.put(forme, false);
         aidForms.put(forme, aid);
         return tab;
@@ -280,7 +276,7 @@ public class Environnement {
 
     void remove_forme(String aid) {
         position_Forme.remove(aid);
-        //  GUI.move_tourist(position_tourist);
+       
     }
 
     synchronized Position get_forme_position(String forme) {

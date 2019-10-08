@@ -12,11 +12,15 @@ import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.io.IOException;
 import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -74,18 +78,8 @@ public class Gui extends JFrame {
 
     }
 
-    void move_guide(Map<String, Position> positions) {
-//         Position[] positionsTab = (Position[]) positions.values().toArray(new Position[0]);
-//         
-//        x_forme = new Integer[positions.size()];
-//        y_forme = new Integer[positions.size()];
-//        int compteur= 0;
-//        for (Position pos : positionsTab) {
-//           System.out.println(pos);
-//            y_forme[compteur] = pos.getY();
-//            x_forme[compteur] = pos.getX();
-//            compteur ++;
-//        }
+    void moveForme(Map<String, Position> positions) {
+
         this.positions = positions;
     }
 
@@ -96,34 +90,20 @@ public class Gui extends JFrame {
             //
 
             g.drawImage(dbImage, 0, 0, getWidth(), getHeight(), this);
-
-            //A
-            g.drawImage(dbImageA, positions.get("A").getX() * 100 + 25, positions.get("A").getY() * 100 + 25,
-                    25,
-                    25, this);
-            //B
-            g.drawImage(dbImageB, positions.get("B").getX() * 100 + 25, positions.get("B").getY() * 100 + 25,
-                    25, 25, this);
-            //C
-            g.drawImage(dbImageC, positions.get("C").getX() * 100 + 25, positions.get("C").getY() * 100 + 25,
-                    25, 25, this);
-            //D
-            g.drawImage(dbImageD, positions.get("D").getX() * 100 + 25, positions.get("D").getY() * 100 + 25,
-                    25, 25, this);
-
-            //A
-            g.drawImage(dbImageE, positions.get("E").getX() * 100 + 25, positions.get("E").getY() * 100 + 25,
-                    25,
-                    25, this);
-            //B
-            g.drawImage(dbImageF, positions.get("F").getX() * 100 + 25, positions.get("F").getY() * 100 + 25,
-                    25, 25, this);
-            //C
-            g.drawImage(dbImageG, positions.get("G").getX() * 100 + 25, positions.get("G").getY() * 100 + 25,
-                    25, 25, this);
-            //D
-            g.drawImage(dbImageH, positions.get("H").getX() * 100 + 25, positions.get("H").getY() * 100 + 25,
-                    25, 25, this);
+              Iterator i = positions.entrySet().iterator();
+            while (i.hasNext()) {
+                try {
+                    Map.Entry form = (Map.Entry) i.next();
+                    String name = (String) form.getKey();
+                    Position pos = (Position) form.getValue();
+                    g.drawImage(ImageIO.read(new File(name+".jpg")), pos.getX() * 100 + 25, pos.getY() * 100 + 25,
+                            25,
+                            25, this);
+                } catch (IOException ex) {
+                    Logger.getLogger(Gui.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        
 
         }
     }
