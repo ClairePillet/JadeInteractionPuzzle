@@ -5,7 +5,6 @@
  */
 package jadeinterractionsimple;
 
-
 import java.util.HashSet;
 import java.util.Set;
 
@@ -14,24 +13,25 @@ import java.util.Set;
  * @author claire
  */
 public class Graph {
-      private Set<Node> nodes = new HashSet<>();
+
+    private Set<Node> nodes = new HashSet<>();
 
     public Graph() {
     }
-     
-      
+
     public void addNode(Node nodeA) {
         nodes.add(nodeA);
     }
 
-     public Node getNode(Position p) {
-            for(Node n : nodes){
-                if(n.getPos().equals(p)){
-                    return n;
-                }
+    public Node getNode(Position p) {
+        for (Node n : nodes) {
+            if (n.getPos().equals(p)) {
+                return n;
             }
+        }
         return null;
     }
+
     public Set<Node> getNodes() {
         return nodes;
     }
@@ -39,5 +39,5 @@ public class Graph {
     public void setNodes(Set<Node> nodes) {
         this.nodes = nodes;
     }
- 
+
 }

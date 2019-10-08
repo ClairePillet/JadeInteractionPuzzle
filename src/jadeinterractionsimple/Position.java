@@ -12,6 +12,7 @@ import static java.lang.Math.abs;
  * @author claire
  */
 public class Position {
+
     private int x;
     private int y;
 
@@ -19,11 +20,13 @@ public class Position {
         this.x = x;
         this.y = y;
     }
+
     public int distance(Position p) {
-      
-       return(abs(this.x -p.getX())+abs(this.y -p.getY()));
-     
+
+        return (abs(this.x - p.getX()) + abs(this.y - p.getY()));
+
     }
+
     public int getX() {
         return x;
     }
@@ -42,13 +45,12 @@ public class Position {
 
     @Override
     public boolean equals(Object o) {
-          if (getClass() != o.getClass()) {
+        if (getClass() != o.getClass()) {
             return false;
         }
-        
-        Position posToTes= (Position)o;
-        if(posToTes.getX()==this.x && posToTes.getY()==this.y)
-        {
+
+        Position posToTes = (Position) o;
+        if (posToTes.getX() == this.x && posToTes.getY() == this.y) {
 
             return true;
         }
@@ -57,8 +59,7 @@ public class Position {
 
     @Override
     public String toString() {
-        return "x:" +this.x +" y: "+this.y; //To change body of generated methods, choose Tools | Templates.
+        return "x:" + this.x + " y: " + this.y; //To change body of generated methods, choose Tools | Templates.
     }
-    
-    
+
 }

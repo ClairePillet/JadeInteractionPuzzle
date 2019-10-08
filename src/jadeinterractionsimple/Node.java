@@ -14,11 +14,12 @@ import java.util.Set;
  * @author claire
  */
 public class Node {
-    
-     private Set<Node> adjNode = new HashSet<>();
+
+    private Set<Node> adjNode = new HashSet<>();
     private Position Pos;
     private int distToStart;
     private int distPredicted;
+
     public Node(Position Pos) {
         this.Pos = Pos;
     }
@@ -26,7 +27,8 @@ public class Node {
     public Set<Node> getAdjnode() {
         return adjNode;
     }
-   public void addNodeAdj(Node nodeA) {
+
+    public void addNodeAdj(Node nodeA) {
         adjNode.add(nodeA);
     }
 
@@ -81,6 +83,5 @@ public class Node {
         }
         return false;
     }
-    
-    
+
 }
