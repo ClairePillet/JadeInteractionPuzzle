@@ -5,13 +5,15 @@
  */
 package jadeinterractionsimple;
 
+import java.io.Serializable;
 import static java.lang.Math.abs;
 
 /**
  *
  * @author claire
  */
-public class Position {
+public class Position implements Serializable 
+{
 
     private int x;
     private int y;

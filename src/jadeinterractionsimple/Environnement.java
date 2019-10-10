@@ -119,7 +119,7 @@ public class Environnement {
         return path;
     }
 
-    synchronized Position aStarSearch(Position start, Position goal) {
+    synchronized  LinkedList<Node> aStarSearch(Position start, Position goal) {
         Node startNode = g.getNode(start);
         Node endNode = g.getNode(goal);
 
@@ -145,7 +145,7 @@ public class Environnement {
                 if (current.equals(endNode)) {
                     LinkedList<Node> path = reconstructPath(startNode, endNode, parentMap);
 
-                    return path.get(0).getPos();
+                    return path;
 
                 }
 
@@ -158,9 +158,9 @@ public class Environnement {
 
                         // 1. calculate distance to neighbor. 2. calculate dist from start node
                         Integer neighborDistance = 1;
-                        if (caseIsFree(neighbor.getPos()) != null) {
-                            neighborDistance = 50;
-                        }
+//                        if (caseIsFree(neighbor.getPos()) != null) {
+//                            neighborDistance = 50;
+//                        }
                         Integer totalDistance = current.getDistToStart() + neighborDistance + predictedDistance;
 
                         // check if distance smaller
@@ -192,16 +192,26 @@ public class Environnement {
         position_Forme.put(forme, new_position);
         GUI.moveForme(position_Forme);
     }
-
-    synchronized Map.Entry caseIsFree(Position new_position) {
+    synchronized Position moveoneCase( Position new_position) {
+        Set<Node> lst=g.getNode(new_position).getAdjnode();
+        for(Node n :lst){
+            if(n.getPos().equals(new_position)==false){
+               if(caseIsFree(n.getPos())==null){
+                   return n.getPos();
+               }
+            }
+        }
+        return new_position;
+    }
+    synchronized AID caseIsFree(Position new_position) {
 
         Iterator i = position_Forme.entrySet().iterator();
         while (i.hasNext()) {
             Map.Entry ps = (Map.Entry) i.next();
             Position pos = (Position) ps.getValue();
             if (pos.equals(new_position) == true) {
-
-                return ps;
+                    AID aid=aidForms.get(ps.getKey());
+                return aid;
             }
         }
         return null;
@@ -232,12 +242,12 @@ public class Environnement {
                 break;
             case "B":
                 p1 = new Position(3, 0);
-                p2 = new Position(1, 0);
+                p2 = new Position(3, 0);//1,0
 
                 break;
             case "C":
                 p1 = new Position(1, 2);
-                p2 = new Position(2, 0);
+                p2 = new Position(4, 0);//2.0
 
                 break;
             case "E":
@@ -262,7 +272,7 @@ public class Environnement {
                 break;
             default:
                 p1 = new Position(2, 3);
-                p2 = new Position(3, 0);
+                p2 = new Position(3, 1);//3.0;
 
                 break;
         }
