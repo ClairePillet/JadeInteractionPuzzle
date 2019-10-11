@@ -103,8 +103,6 @@ public class Gui extends JFrame {
                     Logger.getLogger(Gui.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
-        
-
         }
     }
 }
