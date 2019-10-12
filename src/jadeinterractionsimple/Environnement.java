@@ -69,16 +69,30 @@ public class Environnement {
             for (Node nAdj : lst) {
                 Position posAdj = nAdj.getPos(), pos = n.getPos();
 
-                if (!pos.equals(posAdj)) {
-                    if (((posAdj.getX() == pos.getX() - 1 || posAdj.getX() == pos.getX() + 1) && posAdj.getY() == pos.getY()) || ((posAdj.getY() == pos.getY() - 1 || posAdj.getY() == pos.getY() + 1) && posAdj.getX() == pos.getX())) {
-                        n.addNodeAdj(nAdj);
-                        iMax++;
+                if(posAdj.getX()==pos.getX()){
+                    if(posAdj.getY()==pos.getY()+1 ||posAdj.getY()==pos.getY()-1){
+                    n.addNodeAdj(nAdj);
                     }
-                    if (iMax == 4) {
-                        break;
+                }
+                if(posAdj.getY()==pos.getY()){
+                    if(posAdj.getX()==pos.getX()+1 ||posAdj.getX()==pos.getX()-1){
+                    n.addNodeAdj(nAdj);
                     }
                 }
             }
+//            for (Node nAdj : lst) {
+//                Position posAdj = nAdj.getPos(), pos = n.getPos();
+//
+//                if (!pos.equals(posAdj)) {
+//                    if (((posAdj.getX() == pos.getX() - 1 || posAdj.getX() == pos.getX() + 1) && posAdj.getY() == pos.getY()) || ((posAdj.getY() == pos.getY() - 1 || posAdj.getY() == pos.getY() + 1) && posAdj.getX() == pos.getX())) {
+//                        n.addNodeAdj(nAdj);
+//                        iMax++;
+//                    }
+//                    if (iMax == 4) {
+//                        break;
+//                    }
+//                }
+//            }
             g.addNode(n);
         }
     }
@@ -192,8 +206,8 @@ public class Environnement {
         position_Forme.put(forme, new_position);
         GUI.moveForme(position_Forme);
     }
-    synchronized Position moveoneCase( Position new_position) {
-        Set<Node> lst=g.getNode(new_position).getAdjnode();
+    synchronized Position moveoneCase(Position actual, Position new_position) {
+        Set<Node> lst=g.getNode(actual).getAdjnode();
         for(Node n :lst){
             if(n.getPos().equals(new_position)==false){
                if(caseIsFree(n.getPos())==null){

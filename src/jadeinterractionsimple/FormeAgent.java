@@ -11,6 +11,8 @@ import jade.core.behaviours.CyclicBehaviour;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.UnreadableException;
 import java.io.IOException;
+import java.sql.Timestamp;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.logging.Level;
@@ -30,8 +32,10 @@ public class FormeAgent extends Agent {
     private String forme;
     private Environnement env;
     private LinkedList<Node> path = null;
+    private boolean mustSendAnswerAfterMoved = false;
     private boolean hasReceiveMsg = false;
     private boolean waitOK = false;
+    private boolean waitOtherMove = false;
     private boolean isGoodPlace = false;
     private boolean isGridOK = false;
 
@@ -74,41 +78,71 @@ public class FormeAgent extends Agent {
                     hasReceiveMsg = true;
                     System.out.println(getLocalName() + " receive a msg");
                 }
-                
-            }
-            if (hasReceiveMsg == true) {
-                if (isGoodPlace) {
-                    return 3;
-                } else {
-                    AID reciver =null;
-                    if(msgSend!=null)
-                    {
-                       reciver= (AID) msgSend.getAllReceiver().next();
+                if (performative == ACLMessage.REJECT_PROPOSAL ) {
+                    waitOK = false;
+                }
+                if (performative == ACLMessage.INFORM) {
+                    if (msgRecieve.getContent() != null) {
+                        if (msgRecieve.getContent().contains("free")) {
+                            waitOtherMove = false;
+                        } else {
+                            waitOK = false;
+                            mustSendAnswerAfterMoved = true;
+                        }
                     }
-                    AID sender = (AID) msgRecieve.getSender();
-                    if (sender == reciver) { // il se rentre dedans
-                        return 5;
-                    } else if(waitOK==false){// i natturaly move in other case
-                        return 3;
-                    }else{
-                        return 2;
+
+                }
+            }
+            if (hasReceiveMsg == true && waitOtherMove == false) {
+                if (isGoodPlace) {// a sa place mais doit bouger
+                    return 3;
+                } else if (waitOtherMove) {//a liberer sa place a ttend la validation de l'autre 
+                    return 2;
+                } else {
+                    try {
+                        AID reciver = null;
+                        AID sender = null;
+                        if (msgSend != null) {
+                            reciver = (AID) msgSend.getAllReceiver().next();
+                        }
+                        if (msgRecieve != null) {
+                            sender = (AID) msgRecieve.getSender();
+                        }
+
+                        if (  sender != null && reciver != null && reciver.equals(sender)) { // il s'oppose et s'envoie des msg mutuelement
+                            return 5;
+                        } else if (waitOK == true) {// il n'est pas a sa place et continu a bouger il ne genera olus l'autre
+                            return 2;
+                        } else {
+                            return 3;// esquive l'agent
+                        }
+                        //else if(!posBegin.equals(((MoveMessage) msgRecieve.getContentObject()).getDirection())) {
+//                            return 1;
+//                        }
+                    } catch (Exception ex) {
+
+                        Logger.getLogger(FormeAgent.class.getName()).log(Level.SEVERE, null, ex);
                     }
                 }
+
+            } else if (waitOtherMove) {
+                return 0;
             } else {
-                if (isGoodPlace) {
+                if (isGoodPlace) {// il est a la bonne place mais ne fait rien 
                     return 0;
                 } else {
-                    if (waitOK) {
+                    if (waitOK) {// il attend pour bouger
                         return 2;
                     }
-                    return 1;
+                    return 1;// il bouge normalement 
                 }
             }
-
+            return 0;
         }
 
         public void aStarWhithCom() {
             state = checkState();
+            System.out.println(getLocalName() + " " + state);
             switch (state) {
                 case 1:// move may have an obstacle
                     path = env.aStarSearch(posBegin, posEnd);
@@ -116,73 +150,109 @@ public class FormeAgent extends Agent {
                     if (obstacle != null) {
                         System.out.println(getLocalName() + " send a msg");
                         msgSend = new ACLMessage(ACLMessage.PROPOSE);
+                        Date d= new Date();
+                        msgSend.setConversationId(d.getTime()+getLocalName());
                         msgSend.addReceiver(obstacle);
                         try {
                             Position nextPos = path.size() > 1 ? path.get(1).getPos() : path.get(0).getPos();// on envoie la direction que l'on souhaite atteindre 
-                            msgSend.setContentObject(new MoveMessage(path.size(), path.get(1).getPos()));
+                            msgSend.setContentObject(new MoveMessage(path.size(), nextPos));
                             myAgent.send(msgSend);
                             waitOK = true;
                         } catch (IOException ex) {
                             Logger.getLogger(FormeAgent.class.getName()).log(Level.SEVERE, null, ex);
                         }
                     }
+                    if(hasReceiveMsg){
+                        ACLMessage cantMove = msgRecieve.createReply();
+                            cantMove.setPerformative(ACLMessage.INFORM);
+                            cantMove.addReceiver(msgRecieve.getSender());
+                            cantMove.setContent("YouMove");
+                            myAgent.send(cantMove);
+                            hasReceiveMsg = false;
+                            msgRecieve = null;
+                      
+                    }
+                    if (mustSendAnswerAfterMoved) {
+                        ACLMessage cantMove = new ACLMessage(ACLMessage.INFORM);
+                        cantMove.addReceiver((AID)msgSend.getAllReceiver().next());
+                        cantMove.setContent("free");
+                        myAgent.send(cantMove);
+                        mustSendAnswerAfterMoved = false;
+                    }
                     break;
                 case 2: // we wait for answer
 
                     break;
-                case 3: // final place but need to move for an agent
+                case 3: // he is in place but need to move for an agent
                     try {
-                        obstacle = move(env.moveoneCase(((MoveMessage) msgRecieve.getContentObject()).getDirection()));
-                        if (obstacle != null) {
-                            ACLMessage cantMove = msgRecieve.createReply();
+                        obstacle = move(env.moveoneCase(posBegin,((MoveMessage) msgRecieve.getContentObject()).getDirection()));
+                        if (obstacle == null) {
+                            ACLMessage cantMove = new ACLMessage(ACLMessage.INFORM);
+                           // cantMove.setPerformative(ACLMessage.INFORM);
                             cantMove.addReceiver(msgRecieve.getSender());
-                            cantMove.setContent("CantMove");
+                            cantMove.setContent("YouMove");
                             myAgent.send(cantMove);
+                            hasReceiveMsg = false;
+                            msgRecieve = null;
+                            waitOtherMove = true;
                         } else {
-                            ACLMessage cantMove = msgRecieve.createReply();
+                            ACLMessage cantMove = new ACLMessage(ACLMessage.REJECT_PROPOSAL);
                             cantMove.addReceiver(msgRecieve.getSender());
-                            cantMove.setContent("OK");
+                            cantMove.setContent("cantmove");
+                           // cantMove.setPerformative(ACLMessage.REJECT_PROPOSAL);
                             myAgent.send(cantMove);
+                          
+
                         }
+                        if (mustSendAnswerAfterMoved) {
+                            ACLMessage cantMove = new ACLMessage(ACLMessage.INFORM);
+                            cantMove.addReceiver((AID)msgSend.getAllReceiver().next());
+                            cantMove.setContent("free");
+                            myAgent.send(cantMove);
+                            mustSendAnswerAfterMoved = false;
+                        }
+
                     } catch (UnreadableException ex) {
                         Logger.getLogger(FormeAgent.class.getName()).log(Level.SEVERE, null, ex);
                     }
                     msgRecieve = null;
                     hasReceiveMsg = false;
                     break;
-                case 4: //juste move normally 
+                case 4: //non
 
-                break;
+                    break;
                 case 5: //oposition case 
-                        try {
-                            boolean imove=false;
+                    try {
+                        boolean imove = false;
                         if (path.size() < (((MoveMessage) msgRecieve.getContentObject()).getSizePathLeft())) {
-                             imove=true;
-                        }else if(path.size() == (((MoveMessage) msgRecieve.getContentObject()).getSizePathLeft())) {
-                            imove=msgSend.getPostTimeStamp()<msgRecieve.getPostTimeStamp();
+                            imove = true;
+                        } else if (path.size() == (((MoveMessage) msgRecieve.getContentObject()).getSizePathLeft())) {
+                            int hoice= msgSend.getConversationId().compareTo(msgRecieve.getConversationId());
+                            imove = msgSend.getConversationId().compareTo(msgRecieve.getConversationId())>1?true:false ;
                         }
-                        if( imove==false){
+                        if (imove == false) {
                             //dont move
-                            ACLMessage notMove = msgRecieve.createReply();
-                            notMove.setPerformative(ACLMessage.REJECT_PROPOSAL);
+                            ACLMessage notMove = new ACLMessage(ACLMessage.REJECT_PROPOSAL);;
+                            //notMove.setPerformative(ACLMessage.REJECT_PROPOSAL);
                             notMove.addReceiver(msgRecieve.getSender());
                             notMove.setContent("NotMove");
                             myAgent.send(notMove);
-                            hasReceiveMsg=false;
-                        }else{
-                             ACLMessage Move = msgRecieve.createReply();
-                            Move.setPerformative(ACLMessage.ACCEPT_PROPOSAL);
+                            hasReceiveMsg = false;
+                        } else {
+                            ACLMessage Move = new ACLMessage(ACLMessage.ACCEPT_PROPOSAL);
+                          //  Move.setPerformative(ACLMessage.ACCEPT_PROPOSAL);
                             Move.addReceiver(msgRecieve.getSender());
                             Move.setContent("IMove");
                             myAgent.send(Move);
-                            msgSend=null;
-                            waitOK=false;
-                            
+                            msgSend = null;
+                            waitOK = false;
+
                         }
-                         } catch (UnreadableException ex) {
+
+                    } catch (UnreadableException ex) {
                         Logger.getLogger(FormeAgent.class.getName()).log(Level.SEVERE, null, ex);
                     }
-                break;
+                    break;
                 default://0
                     break;
             }
@@ -195,7 +265,7 @@ public class FormeAgent extends Agent {
                     //on verrifie que l'on ne bouge pas deja
                     //on bouge si notre temps de trajet est  cours ou long
                     if (path.size() <= (((MoveMessage) msgRecieve.getContentObject()).getSizePathLeft())) {
-                        AID obstacle = move(env.moveoneCase(((MoveMessage) msgRecieve.getContentObject()).getDirection()));
+                        AID obstacle = move(env.moveoneCase(posBegin,((MoveMessage) msgRecieve.getContentObject()).getDirection()));
                         if (obstacle != null) {
                             ACLMessage cantMove = msgRecieve.createReply();
                             cantMove.addReceiver(msgRecieve.getSender());

@@ -90,19 +90,22 @@ public class Gui extends JFrame {
             //
 
             g.drawImage(dbImage, 0, 0, getWidth(), getHeight(), this);
-              Iterator i = positions.entrySet().iterator();
-            while (i.hasNext()) {
-                try {
-                    Map.Entry form = (Map.Entry) i.next();
-                    String name = (String) form.getKey();
-                    Position pos = (Position) form.getValue();
-                    g.drawImage(ImageIO.read(new File(name+".jpg")), pos.getX() * 100 + 25, pos.getY() * 100 + 25,
-                            25,
-                            25, this);
-                } catch (IOException ex) {
-                    Logger.getLogger(Gui.class.getName()).log(Level.SEVERE, null, ex);
+            if (positions!=null) {
+                Iterator i = positions.entrySet().iterator();
+                while (i.hasNext()) {
+                    try {
+                        Map.Entry form = (Map.Entry) i.next();
+                        String name = (String) form.getKey();
+                        Position pos = (Position) form.getValue();
+                        g.drawImage(ImageIO.read(new File(name + ".jpg")), pos.getX() * 100 + 25, pos.getY() * 100 + 25,
+                                25,
+                                25, this);
+                    } catch (IOException ex) {
+                        Logger.getLogger(Gui.class.getName()).log(Level.SEVERE, null, ex);
+                    }
                 }
             }
+
         }
     }
 }
