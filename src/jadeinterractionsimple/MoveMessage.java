@@ -5,37 +5,46 @@
  */
 package jadeinterractionsimple;
 
-import java.io.Serializable;
+import jade.lang.acl.ACLMessage;
+import jade.lang.acl.UnreadableException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
  * @author Claire
  */
-public class MoveMessage  implements Serializable {
+public class MoveMessage  {
+    private ACLMessage msg;
+    private MoveMessageContent content;
+
+    public MoveMessage(ACLMessage msg) {
+        try {
+            this.msg = msg;
+            Object o =msg.getContentObject();
+          
+            content=  MoveMessageContent.class.cast(o);
+        } catch (UnreadableException ex) {
+            Logger.getLogger(MoveMessage.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    public ACLMessage getMsg() {
+        return msg;
+    }
+
+    public void setMsg(ACLMessage msg) {
+        this.msg = msg;
+    }
+
+    public MoveMessageContent getContent() {
+        return content;
+    }
+
+    public void setContent(MoveMessageContent content) {
+        this.content = content;
+    }
     
-    private int sizePathLeft;
-    private Position direction;
-
-    public MoveMessage(int sizePathLeft, Position direction) {
-        this.sizePathLeft = sizePathLeft;
-        this.direction = direction;
-    }
-
-    public int getSizePathLeft() {
-        return sizePathLeft;
-    }
-
-    public void setSizePathLeft(int sizePathLeft) {
-        this.sizePathLeft = sizePathLeft;
-    }
-
-    public Position getDirection() {
-        return direction;
-    }
-
-    public void setDirection(Position direction) {
-        this.direction = direction;
-    }
     
     
 }

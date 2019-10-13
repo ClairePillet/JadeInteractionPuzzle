@@ -69,14 +69,14 @@ public class Environnement {
             for (Node nAdj : lst) {
                 Position posAdj = nAdj.getPos(), pos = n.getPos();
 
-                if(posAdj.getX()==pos.getX()){
-                    if(posAdj.getY()==pos.getY()+1 ||posAdj.getY()==pos.getY()-1){
-                    n.addNodeAdj(nAdj);
+                if (posAdj.getX() == pos.getX()) {
+                    if (posAdj.getY() == pos.getY() + 1 || posAdj.getY() == pos.getY() - 1) {
+                        n.addNodeAdj(nAdj);
                     }
                 }
-                if(posAdj.getY()==pos.getY()){
-                    if(posAdj.getX()==pos.getX()+1 ||posAdj.getX()==pos.getX()-1){
-                    n.addNodeAdj(nAdj);
+                if (posAdj.getY() == pos.getY()) {
+                    if (posAdj.getX() == pos.getX() + 1 || posAdj.getX() == pos.getX() - 1) {
+                        n.addNodeAdj(nAdj);
                     }
                 }
             }
@@ -97,103 +97,8 @@ public class Environnement {
         }
     }
 
-    synchronized Map<Node, Integer> initializeAllToInfinity() {
-        Map<Node, Integer> distances = new HashMap<>();
-
-        for (Node n : g.getNodes()) {
-
-            distances.put(n, Integer.MAX_VALUE);
-        }
-        return distances;
-    }
-
-    synchronized PriorityQueue<Node> initQueue() {
-        return new PriorityQueue<>(10, new Comparator<Node>() {
-            public int compare(Node x, Node y) {
-                if (x.getDistToStart() < y.getDistToStart()) {
-                    return -1;
-                }
-                if (x.getDistToStart() > y.getDistToStart()) {
-                    return 1;
-                }
-                return 0;
-            } ;
-        });
-    }
-    synchronized LinkedList<Node> reconstructPath(Node start, Node goal,
-            Map<Node, Node> parentMap) {
-        // construct output list
-        LinkedList<Node> path = new LinkedList<>();
-        Node currNode = goal;
-        while (!currNode.equals(start)) {
-            path.addFirst(currNode);
-            currNode = parentMap.get(currNode);
-        }
-
-        return path;
-    }
-
-    synchronized  LinkedList<Node> aStarSearch(Position start, Position goal) {
-        Node startNode = g.getNode(start);
-        Node endNode = g.getNode(goal);
-
-        // setup for A*
-        HashMap<Node, Node> parentMap = new HashMap<Node, Node>();
-        HashSet<Node> visited = new HashSet<Node>();
-        Map<Node, Integer> distances = initializeAllToInfinity();
-
-        Queue<Node> priorityQueue = initQueue();
-
-        //  enque StartNode, with distance 0
-        startNode.setDistToStart(0);
-        distances.put(startNode, 0);
-        priorityQueue.add(startNode);
-        Node current = null;
-
-        while (!priorityQueue.isEmpty()) {
-            current = priorityQueue.remove();
-
-            if (!visited.contains(current)) {
-                visited.add(current);
-                // if last element in PQ reached
-                if (current.equals(endNode)) {
-                    LinkedList<Node> path = reconstructPath(startNode, endNode, parentMap);
-
-                    return path;
-
-                }
-
-                Set<Node> neighbors = current.getAdjnode();
-                for (Node neighbor : neighbors) {
-                    if (!visited.contains(neighbor)) {
-
-                        // calculate predicted distance to the end node
-                        Integer predictedDistance = neighbor.getPos().distance(endNode.getPos());
-
-                        // 1. calculate distance to neighbor. 2. calculate dist from start node
-                        Integer neighborDistance = 1;
-//                        if (caseIsFree(neighbor.getPos()) != null) {
-//                            neighborDistance = 50;
-//                        }
-                        Integer totalDistance = current.getDistToStart() + neighborDistance + predictedDistance;
-
-                        // check if distance smaller
-                        if (totalDistance < distances.get(neighbor)) {
-                            // update n's distance
-                            distances.put(neighbor, totalDistance);
-                            // used for PriorityQueue
-                            neighbor.setDistToStart(totalDistance);
-                            neighbor.setDistPredicted(predictedDistance);
-                            // set parent
-                            parentMap.put(neighbor, current);
-                            // enqueue
-                            priorityQueue.add(neighbor);
-                        }
-                    }
-                }
-            }
-        }
-        return null;
+    public Graph getG() {
+        return g;
     }
 
     synchronized void setFormeOKNOK(String forme, boolean state) {
@@ -206,17 +111,19 @@ public class Environnement {
         position_Forme.put(forme, new_position);
         GUI.moveForme(position_Forme);
     }
+
     synchronized Position moveoneCase(Position actual, Position new_position) {
-        Set<Node> lst=g.getNode(actual).getAdjnode();
-        for(Node n :lst){
-            if(n.getPos().equals(new_position)==false){
-               if(caseIsFree(n.getPos())==null){
-                   return n.getPos();
-               }
+        Set<Node> lst = g.getNode(actual).getAdjnode();
+        for (Node n : lst) {
+            if (n.getPos().equals(new_position) == false) {
+                if (caseIsFree(n.getPos()) == null) {
+                    return n.getPos();
+                }
             }
         }
-        return new_position;
+        return null;
     }
+
     synchronized AID caseIsFree(Position new_position) {
 
         Iterator i = position_Forme.entrySet().iterator();
@@ -224,7 +131,7 @@ public class Environnement {
             Map.Entry ps = (Map.Entry) i.next();
             Position pos = (Position) ps.getValue();
             if (pos.equals(new_position) == true) {
-                    AID aid=aidForms.get(ps.getKey());
+                AID aid = aidForms.get(ps.getKey());
                 return aid;
             }
         }
@@ -256,12 +163,12 @@ public class Environnement {
                 break;
             case "B":
                 p1 = new Position(3, 0);
-                p2 = new Position(3, 0);//1,0
+                p2 = new Position(1, 0);//1,0
 
                 break;
             case "C":
                 p1 = new Position(1, 2);
-                p2 = new Position(4, 0);//2.0
+                p2 = new Position(2, 0);//2.0
 
                 break;
             case "E":
@@ -284,9 +191,10 @@ public class Environnement {
                 p2 = new Position(2, 1);
 
                 break;
-            default:
+        
+            default://d
                 p1 = new Position(2, 3);
-                p2 = new Position(3, 1);//3.0;
+                p2 = new Position(3, 0);//3.0;
 
                 break;
         }
@@ -300,11 +208,28 @@ public class Environnement {
 
     void remove_forme(String aid) {
         position_Forme.remove(aid);
-       
+
     }
 
-    synchronized Position get_forme_position(String forme) {
+    synchronized Position getFormePosFromName(String forme) {
         return (Position) position_Forme.get(forme);
+    }
+
+    synchronized Position getFormePosFromAID(AID aid) {
+        boolean containsValue = aidForms.containsValue(aid);
+        if (containsValue) {
+            Iterator i = aidForms.entrySet().iterator();
+            while (i.hasNext()) {
+                Map.Entry ps = (Map.Entry) i.next();
+                AID id = (AID) ps.getValue();
+                String  forme = (String) ps.getKey();
+                if (id.equals(aid) == true) {
+                    return (Position) position_Forme.get(forme);
+                }
+            }
+
+        }
+        return null;
     }
 
 }
