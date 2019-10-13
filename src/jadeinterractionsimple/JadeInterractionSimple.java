@@ -57,7 +57,14 @@ public class JadeInterractionSimple {
             acB.start();
             acB = mc.createNewAgent("H", FormeAgent.class.getName(), param);
             acB.start();
-
+acB = mc.createNewAgent("I", FormeAgent.class.getName(), param);
+            acB.start();
+            acB = mc.createNewAgent("J", FormeAgent.class.getName(), param);
+            acB.start();
+            acB = mc.createNewAgent("K", FormeAgent.class.getName(), param);
+            acB.start();
+            acB = mc.createNewAgent("L", FormeAgent.class.getName(), param);
+            acB.start();
         } catch (StaleProxyException ignored) {
         }
     }

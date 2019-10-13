@@ -125,9 +125,9 @@ public class AStar {
 
                         // 1. calculate distance to neighbor. 2. calculate dist from start node
                         Integer neighborDistance = 1;
-//                        if (caseIsFree(neighbor.getPos()) != null) {
-//                            neighborDistance = 50;
-//                        }
+                        if (env.caseIsFree(neighbor.getPos()) != null) {
+                            neighborDistance = 2;
+                        }
                         if (!postionTotAvoid.isEmpty()) {
                             if(postionTotAvoid.contains(neighbor.getPos())){
                                 neighborDistance=1000;

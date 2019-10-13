@@ -31,20 +31,16 @@ public class Environnement {
 
     private Integer size;
     private Map<String, AID> aidForms;
-    volatile Map<String, Position> position_Forme;
-    volatile Map<String, Boolean> EndPos_Forme;
-    private Integer[] position_B;
-    private Integer[] position_C;
-    private Integer[] position_D;
+    volatile Map<String, Position> positionForme;
+    volatile Map<String, Boolean> endPosForme;
     private Gui GUI = new Gui();
     private Graph g;
-    //private gui_musee GUI = new gui_musee();
     boolean verbose = false;
 
     Environnement(Integer size_grid) {
         size = size_grid;
-        position_Forme = new ConcurrentHashMap<String, Position>();
-        EndPos_Forme = new ConcurrentHashMap<String, Boolean>();
+        positionForme = new ConcurrentHashMap<String, Position>();
+        endPosForme = new ConcurrentHashMap<String, Boolean>();
         aidForms = new ConcurrentHashMap<String, AID>();
         GUI.setSize(500, 500);
         GUI.setLocation(700, 20);
@@ -65,7 +61,7 @@ public class Environnement {
         }
 
         for (Node n : lst) {
-            int iMax = 0;
+       
             for (Node nAdj : lst) {
                 Position posAdj = nAdj.getPos(), pos = n.getPos();
 
@@ -80,19 +76,7 @@ public class Environnement {
                     }
                 }
             }
-//            for (Node nAdj : lst) {
-//                Position posAdj = nAdj.getPos(), pos = n.getPos();
-//
-//                if (!pos.equals(posAdj)) {
-//                    if (((posAdj.getX() == pos.getX() - 1 || posAdj.getX() == pos.getX() + 1) && posAdj.getY() == pos.getY()) || ((posAdj.getY() == pos.getY() - 1 || posAdj.getY() == pos.getY() + 1) && posAdj.getX() == pos.getX())) {
-//                        n.addNodeAdj(nAdj);
-//                        iMax++;
-//                    }
-//                    if (iMax == 4) {
-//                        break;
-//                    }
-//                }
-//            }
+
             g.addNode(n);
         }
     }
@@ -102,31 +86,72 @@ public class Environnement {
     }
 
     synchronized void setFormeOKNOK(String forme, boolean state) {
-        EndPos_Forme.remove(forme);
-        EndPos_Forme.put(forme, state);
+        endPosForme.remove(forme);
+        endPosForme.put(forme, state);
     }
 
-    synchronized void move_forme(String forme, Position new_position) {
-        position_Forme.remove(forme);
-        position_Forme.put(forme, new_position);
-        GUI.moveForme(position_Forme);
+    synchronized void moveForme(String forme, Position new_position) {
+        positionForme.remove(forme);
+        positionForme.put(forme, new_position);
+        GUI.moveForme(positionForme);
     }
-
-    synchronized Position moveoneCase(Position actual, Position new_position) {
+synchronized  LinkedList<Node>  findClosestWhite(Position actual, Position new_position,AID sender) {
+    
+        Position pEmpty=null;
+        ArrayList exclusionList = new ArrayList();
+        exclusionList.add(sender);
+        int minDist=1000;
+        LinkedList<Node> pathmin=new LinkedList<>();
+        AStar astar= new AStar(this);
+       Set<Node> lst = g.getNodes();
+         for (Node n : lst) {
+             if(!n.getPos().equals(new_position)){
+                  if (caseIsFree(n.getPos())==null) {
+                    LinkedList<Node> path = astar.aStarSearch(actual, n.getPos(),exclusionList );
+                    int dist=path.size();
+                    if(dist<minDist){
+                        pEmpty =n.getPos();
+                        minDist=dist;
+                        pathmin=path;
+                    }
+                }
+             }
+           
+        }
+    return pathmin;
+}
+    synchronized Position moveOneCase(Position actual, Position new_position,Position sender) {
         Set<Node> lst = g.getNode(actual).getAdjnode();
+        
+       
+        Position pPossible=null;
         for (Node n : lst) {
-            if (n.getPos().equals(new_position) == false) {
+            if (n.getPos().equals(new_position) == false &&n.getPos().equals(sender) == false) {
                 if (caseIsFree(n.getPos()) == null) {
                     return n.getPos();
                 }
+                pPossible =n.getPos();
             }
         }
-        return null;
+        
+        return pPossible;
+    }
+synchronized boolean checkBlock(Position actual) {
+        Set<Node> lst = g.getNode(actual).getAdjnode();
+           for (Node nAdj : lst) {             
+                if(caseIsFree(nAdj.getPos())==null){
+                    return false;
+                }                 
+            }
+       
+      
+        
+        return true;
     }
 
     synchronized AID caseIsFree(Position new_position) {
 
-        Iterator i = position_Forme.entrySet().iterator();
+        Iterator i = positionForme.entrySet().iterator();
         while (i.hasNext()) {
             Map.Entry ps = (Map.Entry) i.next();
             Position pos = (Position) ps.getValue();
@@ -139,7 +164,7 @@ public class Environnement {
     }
 
     synchronized boolean gridIsOK() {
-        Boolean[] positionsTab = (Boolean[]) EndPos_Forme.values().toArray(new Boolean[0]);
+        Boolean[] positionsTab = (Boolean[]) endPosForme.values().toArray(new Boolean[0]);
 
         for (Boolean state : positionsTab) {
             if (state == false) {
@@ -187,11 +212,29 @@ public class Environnement {
 
                 break;
             case "H":
-                p1 = new Position(3, 2);
+                p1 = new Position(3, 3);
                 p2 = new Position(2, 1);
 
                 break;
-        
+            case "I":
+                p1 = new Position(4, 2);
+                p2 = new Position(3, 1);
+
+                break;
+            case "J":
+                p1 = new Position(3, 4);
+                p2 = new Position(4, 1);
+
+                break;
+            case "K":
+                p1 = new Position(1, 1);
+                p2 = new Position(0, 2);
+
+                break;
+            case "L":
+                p1 = new Position(2, 2);
+                p2 = new Position(1, 2);
+                break;
             default://d
                 p1 = new Position(2, 3);
                 p2 = new Position(3, 0);//3.0;
@@ -199,20 +242,20 @@ public class Environnement {
                 break;
         }
         Position[] tab = {p1, p2};
-        position_Forme.put(forme, p1);
-        GUI.moveForme(position_Forme);
-        EndPos_Forme.put(forme, false);
+        positionForme.put(forme, p1);
+        GUI.moveForme(positionForme);
+        endPosForme.put(forme, false);
         aidForms.put(forme, aid);
         return tab;
     }
 
     void remove_forme(String aid) {
-        position_Forme.remove(aid);
+        positionForme.remove(aid);
 
     }
 
     synchronized Position getFormePosFromName(String forme) {
-        return (Position) position_Forme.get(forme);
+        return (Position) positionForme.get(forme);
     }
 
     synchronized Position getFormePosFromAID(AID aid) {
@@ -222,9 +265,9 @@ public class Environnement {
             while (i.hasNext()) {
                 Map.Entry ps = (Map.Entry) i.next();
                 AID id = (AID) ps.getValue();
-                String  forme = (String) ps.getKey();
+                String forme = (String) ps.getKey();
                 if (id.equals(aid) == true) {
-                    return (Position) position_Forme.get(forme);
+                    return (Position) positionForme.get(forme);
                 }
             }
 
