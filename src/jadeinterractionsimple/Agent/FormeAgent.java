@@ -91,7 +91,7 @@ public class FormeAgent extends Agent {
                 System.out.println("Finish");
             }
             try {
-                Thread.sleep(1000);
+                Thread.sleep(500);
             } catch (InterruptedException e) {
                 System.err.format("IOException : %s%n", e);
             }
@@ -105,6 +105,7 @@ public class FormeAgent extends Agent {
                         if(lastAgentIMoveFor!= null && lastAgentIMoveFor.equals(msgR.getSender())){
                            
                              sendMsg("AlreadyMoveForYou", ACLMessage.REJECT_PROPOSAL, msgR.getSender());
+                   
                              lastAgentIMoveFor=null;
                         }else{
                              hasReceiveMsg = true;
@@ -121,33 +122,24 @@ public class FormeAgent extends Agent {
                 if (performative == ACLMessage.REJECT_PROPOSAL) {
                     if(msgSend!=null && msgSend.getAllReceiver().next().equals(msgR.getSender())){
                         msgSend = null;
-                    System.out.println(getLocalName() + " msgsendNUll113");
                     waitOK = false;
                     mustSendAnswerAfterMoved = false;
                     exclusionList.add(msgR.getSender());
                     }
                     
                 }
-//                if (performative == ACLMessage.ACCEPT_PROPOSAL) {
-//
-//                    waitOK = true;
-//                }
+//               
                 if (performative == ACLMessage.INFORM) {
                     if (msgR.getContent() != null) {
                         if (msgR.getContent().contains("free")) {
-                           // msgRecieve = null;//avt msgsend
                             waitOtherMove = false;
                         }
                         if (msgR.getContent().contains("YouCanMove")) {
                             waitOK = false;
                             mustSendAnswerAfterMoved = true;
                             personneToAnswerAfterMove=msgR.getSender();
-                            if(msgSend==null){
-                                mustSendAnswerAfterMoved = true;
-                            }
-                        } else {
-
-                        }
+                           
+                        } 
                     }
                 }
                 msgR = receive();
@@ -159,9 +151,9 @@ public class FormeAgent extends Agent {
             env.setFormeOKNOK(forme, isGoodPlace);
            
             if (msgRecieve != null && waitOtherMove == false) {
-                if (isGoodPlace) {// a sa place mais doit bouger
+                if (isGoodPlace) {// final palce but have msg to move
                     return State.MOVEFORMSG;
-                } else if (waitOK) {// il attend pour bouger
+                } else if (waitOK) {// wait for move
                         return State.WAITANSWER;
                     }else {
                     try {
@@ -173,26 +165,15 @@ public class FormeAgent extends Agent {
                         if (msgRecieve != null) {
                             sender = (AID) msgRecieve.getMsg().getSender();
                         }
-                        //si je ne suis deja plus sur la position de l'agent 
-//                        Position agent=env.getFormePosFromAID(sender);
-//                                Position dir=msgRecieve.getContent().getDirection();
-//                                Shape line = new Line2D.Double(agent.getX(),agent.getY(),dir.getX(),dir.getY());
-//                                
-//                        if(line.contains(posBegin.getX(),posBegin.getY())){
-//                            return State.MOVETOFINISH;
-                        // }else{
-                        if (sender != null && reciver != null && reciver.equals(sender)) { // il s'oppose et s'envoie des msg mutuelement
+                        
+                        if (sender != null && reciver != null && reciver.equals(sender)) { // oposition muttulay send msg
                             return State.OPPOSITION;
-                        } else if (waitOK == true) {// il n'est pas a sa place et continu a bouger il ne genera olus l'autre
+                        } else if (waitOK == true) {// wait to move
                             return State.WAITANSWER;
                         } else {
-                            return State.MOVEFORMSG;// esquive l'agent
+                            return State.MOVEFORMSG;// avoid agent
                         }
-                        // }
-
-                        //else if(!posBegin.equals(((MoveMessage) msgRecieve.getContentObject()).getDirection())) {
-//                            return 1;
-//                        }
+                      
                     } catch (Exception ex) {
 
                         Logger.getLogger(FormeAgent.class.getName()).log(Level.SEVERE, null, ex);
@@ -202,13 +183,13 @@ public class FormeAgent extends Agent {
             } else if (waitOtherMove) {
                 return State.WAITOTHERMOVE;
             } else {
-                if (isGoodPlace) {// il est a la bonne place mais ne fait rien 
+                if (isGoodPlace) {// final place 
                     return State.FINISH;
                 } else {
-                    if (waitOK) {// il attend pour bouger
+                    if (waitOK) {// wait for move
                         return State.WAITANSWER;
                     }
-                    return State.MOVETOFINISH;// il bouge normalement 
+                    return State.MOVETOFINISH;// normaly move
                 }
             }
             return State.FINISH;
@@ -248,7 +229,7 @@ waitOK=true;
                         try {
                             Position nextPos = path.size() > 1 ? path.get(1).getPos() : path.get(0).getPos();// on envoie la direction que l'on souhaite atteindre 
                             sendMsgWithContent(new MoveMessageContent(path.size(), nextPos), ACLMessage.PROPOSE, obstacle);
-                            //waitOK = true;
+                            
                         } catch (IOException ex) {
                             Logger.getLogger(FormeAgent.class.getName()).log(Level.SEVERE, null, ex);
                         }
@@ -273,8 +254,8 @@ waitOK=true;
 
                     break;
 
-                case MOVEFORMSG: // he is in place but need to move for an agent
-                    LinkedList<Node> pathToAvoid = env.findClosestWhite(posBegin, msgRecieve.getContent().getDirection(), msgRecieve.getMsg().getSender());//env.getFormePosFromAID(msgRecieve.getMsg().getSender()));
+                case MOVEFORMSG: // need to move for an agent
+                    LinkedList<Node> pathToAvoid = aStar.findClosestWhite(posBegin, msgRecieve.getContent().getDirection(), msgRecieve.getMsg().getSender());//env.getFormePosFromAID(msgRecieve.getMsg().getSender()));
                     Position p = null;
                     if (pathToAvoid.size() > 0) {
                         p = pathToAvoid.get(0).getPos();
@@ -290,23 +271,17 @@ waitOK=true;
                         waitOtherMove = true;
                         path = aStar.aStarSearch(posBegin, posEnd, exclusionList);
                         if (mustSendAnswerAfterMoved) {
-                            //sendMsg("free", ACLMessage.INFORM, (AID) msgSend.getAllReceiver().next());
+                            
                             sendMsg("free", ACLMessage.INFORM, personneToAnswerAfterMove);
                             mustSendAnswerAfterMoved = false;
                             personneToAnswerAfterMove=null;
                             msgSend = null;
-                            System.out.println(getLocalName() + " msgsendNUll263");
                         }
                         msgRecieve = null;
                         hasReceiveMsg = false;
                     } else {
                         try {
-                            //Position nextPos = path.size() > 1 ? path.get(1).getPos() : path.get(0).getPos();// on envoie la direction que l'on souhaite atteindre
-//                            if(msgSend!=null){
-//                                  sendMsg("NotMove", ACLMessage.REJECT_PROPOSAL, (AID) msgRecieve.getMsg().getSender());
-//                                  msgRecieve=null;
-//                                   hasReceiveMsg = false;
-//                            }
+                            
                             sendMsgWithContent(new MoveMessageContent(Integer.MAX_VALUE, p), ACLMessage.PROPOSE, obstacle);
 
                         } catch (IOException ex) {
@@ -321,7 +296,6 @@ waitOK=true;
                 case OPPOSITION: //oposition case 
 
                     boolean imove = false;
-                    //  if(env.checkBlock(posBegin) ||env.checkBlock(p))
                     if (path.size() < (msgRecieve.getContent().getSizePathLeft())) {
                         imove = true;
                     } else if (path.size() == (msgRecieve.getContent().getSizePathLeft())) {
@@ -343,9 +317,7 @@ waitOK=true;
                         System.out.println(getLocalName() + "not move");
                     } else {
                         sendMsg("IMove", ACLMessage.ACCEPT_PROPOSAL, (AID) msgRecieve.getMsg().getSender());
-                        System.out.println(getLocalName() + " msgsendNUll306");
                         msgSend = null;
-                        // waitOK = false;
                         System.out.println(getLocalName() + " move");
                     }
 
@@ -354,7 +326,6 @@ waitOK=true;
                     timeWait++;
                     if (timeWait > 2) {
                         timeWait = 0;
-                        //   waitOtherMove = false;
                         waitOK = false;
                         if(msgSend!=null){
                             exclusionList.add(msgSend.getSender());
@@ -388,7 +359,6 @@ waitOK=true;
                 move(newP);
                 System.out.println(newP + " a*");
             } else {
-//                setFormeOKNOK //get message if someone want him to move
                 env.setFormeOKNOK(forme, true);
                 System.out.println(getLocalName() + " is OK");
             }

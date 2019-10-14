@@ -42,7 +42,7 @@ public class Environnement {
     private Graph g;
     boolean verbose = false;
 
-   public Environnement(Integer size_grid) {
+    public Environnement(Integer size_grid) {
         size = size_grid;
         positionForme = new ConcurrentHashMap<String, Position>();
         endPosForme = new ConcurrentHashMap<String, Boolean>();
@@ -66,7 +66,7 @@ public class Environnement {
         }
 
         for (Node n : lst) {
-       
+
             for (Node nAdj : lst) {
                 Position posAdj = nAdj.getPos(), pos = n.getPos();
 
@@ -90,67 +90,41 @@ public class Environnement {
         return g;
     }
 
-   public synchronized void setFormeOKNOK(String forme, boolean state) {
+    public synchronized void setFormeOKNOK(String forme, boolean state) {
         endPosForme.remove(forme);
         endPosForme.put(forme, state);
     }
 
-   public synchronized void moveForme(String forme, Position new_position) {
+    public synchronized void moveForme(String forme, Position new_position) {
         positionForme.remove(forme);
         positionForme.put(forme, new_position);
         GUI.moveForme(positionForme);
     }
-public synchronized  LinkedList<Node>  findClosestWhite(Position actual, Position new_position,AID sender) {
-    
-        Position pEmpty=null;
-        ArrayList exclusionList = new ArrayList();
-        exclusionList.add(sender);
-        int minDist=1000;
-        LinkedList<Node> pathmin=new LinkedList<>();
-        AStar astar= new AStar(this);
-       Set<Node> lst = g.getNodes();
-         for (Node n : lst) {
-             if(!n.getPos().equals(new_position)){
-                  if (caseIsFree(n.getPos())==null) {
-                    LinkedList<Node> path = astar.aStarSearch(actual, n.getPos(),exclusionList );
-                    int dist=path.size();
-                    if(dist<minDist){
-                        pEmpty =n.getPos();
-                        minDist=dist;
-                        pathmin=path;
-                    }
-                }
-             }
-           
-        }
-    return pathmin;
-}
-    public synchronized Position moveOneCase(Position actual, Position new_position,Position sender) {
+
+    public synchronized Position moveOneCase(Position actual, Position new_position, Position sender) {
         Set<Node> lst = g.getNode(actual).getAdjnode();
-        
-       
-        Position pPossible=null;
+
+        Position pPossible = null;
         for (Node n : lst) {
-            if (n.getPos().equals(new_position) == false &&n.getPos().equals(sender) == false) {
+            if (n.getPos().equals(new_position) == false && n.getPos().equals(sender) == false) {
                 if (caseIsFree(n.getPos()) == null) {
                     return n.getPos();
                 }
-                pPossible =n.getPos();
+                pPossible = n.getPos();
             }
         }
-        
+
         return pPossible;
     }
-   synchronized boolean checkBlock(Position actual) {
+
+    synchronized boolean checkBlock(Position actual) {
         Set<Node> lst = g.getNode(actual).getAdjnode();
-           for (Node nAdj : lst) {             
-                if(caseIsFree(nAdj.getPos())==null){
-                    return false;
-                }                 
+        for (Node nAdj : lst) {
+            if (caseIsFree(nAdj.getPos()) == null) {
+                return false;
             }
-       
-      
-        
+        }
+
         return true;
     }
 
@@ -254,12 +228,12 @@ public synchronized  LinkedList<Node>  findClosestWhite(Position actual, Positio
         return tab;
     }
 
-   public void remove_forme(String aid) {
+    public void remove_forme(String aid) {
         positionForme.remove(aid);
 
     }
 
-   public synchronized Position getFormePosFromName(String forme) {
+    public synchronized Position getFormePosFromName(String forme) {
         return (Position) positionForme.get(forme);
     }
 

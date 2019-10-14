@@ -81,27 +81,53 @@ public class AStar {
         return distances;
     }
 
-   public synchronized LinkedList<Node> aStarSearch(Position start, Position goal, ArrayList<AID> exclusionList) {
+    public synchronized LinkedList<Node> findClosestWhite(Position actual, Position new_position, AID sender) {
+
+        Position pEmpty = null;
+        ArrayList exclusionList = new ArrayList();
+        exclusionList.add(sender);
+        int minDist = 1000;
+        LinkedList<Node> pathmin = new LinkedList<>();
+
+        Set<Node> lst = g.getNodes();
+        for (Node n : lst) {
+            if (!n.getPos().equals(new_position)) {
+                if (env.caseIsFree(n.getPos()) == null) {
+                    LinkedList<Node> path = aStarSearch(actual, n.getPos(), exclusionList);
+                    int dist = path.size();
+                    if (dist < minDist) {
+                        pEmpty = n.getPos();
+                        minDist = dist;
+                        pathmin = path;
+                    }
+                }
+            }
+
+        }
+        return pathmin;
+    }
+
+    public synchronized LinkedList<Node> aStarSearch(Position start, Position goal, ArrayList<AID> exclusionList) {
 
         Node startNode = g.getNode(start);
         Node endNode = g.getNode(goal);
 
-        // setup for A*
         HashMap<Node, Node> parentMap = new HashMap<Node, Node>();
         HashSet<Node> visited = new HashSet<Node>();
         Map<Node, Integer> distances = initializeAllToInfinity();
-        ArrayList<Position> postionTotAvoid= new ArrayList<>();
+        ArrayList<Position> postionTotAvoid = new ArrayList<>();
         Queue<Node> priorityQueue = initQueue();
+        // create list of position to avoid because we can comunicate whit agent
         if (exclusionList != null) {
-            for (AID aid : exclusionList){
-                Position p= env.getFormePosFromAID(aid);
-                if(p!=null){
-                     postionTotAvoid.add(p);
+            for (AID aid : exclusionList) {
+                Position p = env.getFormePosFromAID(aid);
+                if (p != null) {
+                    postionTotAvoid.add(p);
                 }
-               
+
             }
         }
-        //  enque StartNode, with distance 0
+        //start whit 0
         startNode.setDistToStart(0);
         distances.put(startNode, 0);
         priorityQueue.add(startNode);
@@ -112,43 +138,35 @@ public class AStar {
 
             if (!visited.contains(current)) {
                 visited.add(current);
-                // if last element in PQ reached
+                // lasy element visited
                 if (current.equals(endNode)) {
                     LinkedList<Node> path = reconstructPath(startNode, endNode, parentMap);
 
                     return path;
 
                 }
-
                 Set<Node> neighbors = current.getAdjnode();
                 for (Node neighbor : neighbors) {
                     if (!visited.contains(neighbor)) {
 
-                        // calculate predicted distance to the end node
                         Integer predictedDistance = neighbor.getPos().distance(endNode.getPos());
-
-                        // 1. calculate distance to neighbor. 2. calculate dist from start node
                         Integer neighborDistance = 1;
-                        if (env.caseIsFree(neighbor.getPos()) != null) {
-                            neighborDistance = 2;
-                        }
+//                        if (env.caseIsFree(neighbor.getPos()) != null) {
+//                            neighborDistance = 2;/50 whithout comm
+//                        }
                         if (!postionTotAvoid.isEmpty()) {
-                            if(postionTotAvoid.contains(neighbor.getPos())){
-                                neighborDistance=1000;
-                            }                            
+                            if (postionTotAvoid.contains(neighbor.getPos())) {
+                                neighborDistance = 1000;
+                            }
                         }
                         Integer totalDistance = current.getDistToStart() + neighborDistance + predictedDistance;
-
-                        // check if distance smaller
+                        // if distance smaller
                         if (totalDistance < distances.get(neighbor)) {
-                            // update n's distance
+                            // update  distance
                             distances.put(neighbor, totalDistance);
-                            // used for PriorityQueue
                             neighbor.setDistToStart(totalDistance);
                             neighbor.setDistPredicted(predictedDistance);
-                            // set parent
                             parentMap.put(neighbor, current);
-                            // enqueue
                             priorityQueue.add(neighbor);
                         }
                     }

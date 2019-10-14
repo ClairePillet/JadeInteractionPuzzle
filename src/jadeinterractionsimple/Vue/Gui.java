@@ -34,14 +34,7 @@ import javax.swing.Timer;
 public class Gui extends JFrame {
 
     private Map<String, Position> positions;
-    private Image dbImageA;
-    private Image dbImageB;
-    private Image dbImageD;
-    private Image dbImageC;
-    private Image dbImageE;
-    private Image dbImageF;
-    private Image dbImageG;
-    private Image dbImageH;
+   
     private Image dbImage;
 
     private painting_area canvas;
@@ -58,14 +51,7 @@ public class Gui extends JFrame {
 
         dbImage = ImageIO.read(new File("test.jpg"));
 
-        dbImageA = ImageIO.read(new File("A.jpg"));
-        dbImageB = ImageIO.read(new File("B.jpg"));
-        dbImageC = ImageIO.read(new File("C.jpg"));
-        dbImageD = ImageIO.read(new File("D.jpg"));
-        dbImageE = ImageIO.read(new File("E.jpg"));
-        dbImageF = ImageIO.read(new File("F.jpg"));
-        dbImageG = ImageIO.read(new File("G.jpg"));
-        dbImageH = ImageIO.read(new File("H.jpg"));
+      
         canvas = new painting_area();
         add(canvas);
 
