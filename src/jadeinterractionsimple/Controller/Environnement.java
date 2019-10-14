@@ -3,9 +3,14 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package jadeinterractionsimple;
+package jadeinterractionsimple.Controller;
 
+import jadeinterractionsimple.Vue.Gui;
 import jade.core.AID;
+import jadeinterractionsimple.Agent.AStar;
+import jadeinterractionsimple.Graph;
+import jadeinterractionsimple.Node;
+import jadeinterractionsimple.Position;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -37,7 +42,7 @@ public class Environnement {
     private Graph g;
     boolean verbose = false;
 
-    Environnement(Integer size_grid) {
+   public Environnement(Integer size_grid) {
         size = size_grid;
         positionForme = new ConcurrentHashMap<String, Position>();
         endPosForme = new ConcurrentHashMap<String, Boolean>();
@@ -85,17 +90,17 @@ public class Environnement {
         return g;
     }
 
-    synchronized void setFormeOKNOK(String forme, boolean state) {
+   public synchronized void setFormeOKNOK(String forme, boolean state) {
         endPosForme.remove(forme);
         endPosForme.put(forme, state);
     }
 
-    synchronized void moveForme(String forme, Position new_position) {
+   public synchronized void moveForme(String forme, Position new_position) {
         positionForme.remove(forme);
         positionForme.put(forme, new_position);
         GUI.moveForme(positionForme);
     }
-synchronized  LinkedList<Node>  findClosestWhite(Position actual, Position new_position,AID sender) {
+public synchronized  LinkedList<Node>  findClosestWhite(Position actual, Position new_position,AID sender) {
     
         Position pEmpty=null;
         ArrayList exclusionList = new ArrayList();
@@ -120,7 +125,7 @@ synchronized  LinkedList<Node>  findClosestWhite(Position actual, Position new_p
         }
     return pathmin;
 }
-    synchronized Position moveOneCase(Position actual, Position new_position,Position sender) {
+    public synchronized Position moveOneCase(Position actual, Position new_position,Position sender) {
         Set<Node> lst = g.getNode(actual).getAdjnode();
         
        
@@ -136,7 +141,7 @@ synchronized  LinkedList<Node>  findClosestWhite(Position actual, Position new_p
         
         return pPossible;
     }
-synchronized boolean checkBlock(Position actual) {
+   synchronized boolean checkBlock(Position actual) {
         Set<Node> lst = g.getNode(actual).getAdjnode();
            for (Node nAdj : lst) {             
                 if(caseIsFree(nAdj.getPos())==null){
@@ -149,7 +154,7 @@ synchronized boolean checkBlock(Position actual) {
         return true;
     }
 
-    synchronized AID caseIsFree(Position new_position) {
+    public synchronized AID caseIsFree(Position new_position) {
 
         Iterator i = positionForme.entrySet().iterator();
         while (i.hasNext()) {
@@ -163,7 +168,7 @@ synchronized boolean checkBlock(Position actual) {
         return null;
     }
 
-    synchronized boolean gridIsOK() {
+    public synchronized boolean gridIsOK() {
         Boolean[] positionsTab = (Boolean[]) endPosForme.values().toArray(new Boolean[0]);
 
         for (Boolean state : positionsTab) {
@@ -174,7 +179,7 @@ synchronized boolean checkBlock(Position actual) {
         return true;
     }
 
-    Position[] add_forme(AID aid, String forme) {
+    public Position[] add_forme(AID aid, String forme) {
 
         Position p1;
         Position p2;
@@ -249,16 +254,16 @@ synchronized boolean checkBlock(Position actual) {
         return tab;
     }
 
-    void remove_forme(String aid) {
+   public void remove_forme(String aid) {
         positionForme.remove(aid);
 
     }
 
-    synchronized Position getFormePosFromName(String forme) {
+   public synchronized Position getFormePosFromName(String forme) {
         return (Position) positionForme.get(forme);
     }
 
-    synchronized Position getFormePosFromAID(AID aid) {
+    public synchronized Position getFormePosFromAID(AID aid) {
         boolean containsValue = aidForms.containsValue(aid);
         if (containsValue) {
             Iterator i = aidForms.entrySet().iterator();

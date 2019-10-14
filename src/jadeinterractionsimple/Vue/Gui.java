@@ -3,9 +3,10 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package jadeinterractionsimple;
+package jadeinterractionsimple.Vue;
 
 import jade.core.AID;
+import jadeinterractionsimple.Position;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Image;
@@ -78,7 +79,7 @@ public class Gui extends JFrame {
 
     }
 
-    void moveForme(Map<String, Position> positions) {
+  public  void moveForme(Map<String, Position> positions) {
 
         this.positions = positions;
     }

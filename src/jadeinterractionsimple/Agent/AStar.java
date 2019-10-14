@@ -3,9 +3,13 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package jadeinterractionsimple;
+package jadeinterractionsimple.Agent;
 
+import jadeinterractionsimple.Controller.Environnement;
 import jade.core.AID;
+import jadeinterractionsimple.Graph;
+import jadeinterractionsimple.Node;
+import jadeinterractionsimple.Position;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -77,7 +81,7 @@ public class AStar {
         return distances;
     }
 
-    synchronized LinkedList<Node> aStarSearch(Position start, Position goal, ArrayList<AID> exclusionList) {
+   public synchronized LinkedList<Node> aStarSearch(Position start, Position goal, ArrayList<AID> exclusionList) {
 
         Node startNode = g.getNode(start);
         Node endNode = g.getNode(goal);

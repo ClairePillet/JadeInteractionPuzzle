@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package jadeinterractionsimple;
+package jadeinterractionsimple.Agent;
 
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.UnreadableException;
