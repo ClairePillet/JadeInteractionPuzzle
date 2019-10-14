@@ -5,6 +5,8 @@
  */
 package jadeinterractionsimple;
 
+import jadeinterractionsimple.Agent.FormeAgent;
+import jadeinterractionsimple.Controller.Environnement;
 import jade.core.Profile;
 import jade.core.ProfileImpl;
 import jade.core.Runtime;
