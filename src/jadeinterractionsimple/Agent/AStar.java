@@ -27,7 +27,7 @@ import java.util.Set;
 public class AStar {
 
     private Environnement env;
-    private Graph g;
+    private volatile Graph g;
 
     public Environnement getEnv() {
         return env;
@@ -86,23 +86,26 @@ public class AStar {
         Position pEmpty = null;
         ArrayList exclusionList = new ArrayList();
         exclusionList.add(sender);
-        int minDist = 1000;
+        int minDist = Integer.MAX_VALUE;
         LinkedList<Node> pathmin = new LinkedList<>();
+        LinkedList<Node> path;
 
         Set<Node> lst = g.getNodes();
         for (Node n : lst) {
-            if (!n.getPos().equals(new_position)) {
-                if (env.caseIsFree(n.getPos()) == null) {
-                    LinkedList<Node> path = aStarSearch(actual, n.getPos(), exclusionList);
+  
+                if (env.caseIsFree(n.getPos(),null) == null) {
+                    path = aStarSearch(actual, n.getPos(), exclusionList);
                     int dist = path.size();
                     if (dist < minDist) {
                         pEmpty = n.getPos();
                         minDist = dist;
                         pathmin = path;
                     }
-                }
-            }
+                }           
 
+        }
+        if(pathmin.size()==0){
+            pEmpty = null;
         }
         return pathmin;
     }
@@ -111,7 +114,9 @@ public class AStar {
 
         Node startNode = g.getNode(start);
         Node endNode = g.getNode(goal);
-
+        if(startNode==null){
+             startNode = g.getNode(start);
+        }
         HashMap<Node, Node> parentMap = new HashMap<Node, Node>();
         HashSet<Node> visited = new HashSet<Node>();
         Map<Node, Integer> distances = initializeAllToInfinity();

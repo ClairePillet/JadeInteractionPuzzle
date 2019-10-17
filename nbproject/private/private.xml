@@ -1,29 +1,13 @@
-<<<<<<< Updated upstream
 <?xml version="1.0" encoding="UTF-8"?>
 <project-private xmlns="http://www.netbeans.org/ns/project-private/1">
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/home/claire/NetBeansProjects/JadeInteractionPuzzle/src/jadeinterractionsimple/Node.java</file>
-            <file>file:/home/claire/NetBeansProjects/JadeInteractionPuzzle/src/jadeinterractionsimple/Environnement.java</file>
-            <file>file:/home/claire/NetBeansProjects/JadeInteractionPuzzle/src/jadeinterractionsimple/Graph.java</file>
-            <file>file:/home/claire/NetBeansProjects/JadeInteractionPuzzle/src/jadeinterractionsimple/FormeAgent.java</file>
+            <file>file:/home/claire/NetBeansProjects/JadeInteractionPuzzle/src/jadeinterractionsimple/Vue/Gui.java</file>
+            <file>file:/home/claire/NetBeansProjects/JadeInteractionPuzzle/src/jadeinterractionsimple/Agent/FormeAgent.java</file>
+            <file>file:/home/claire/NetBeansProjects/JadeInteractionPuzzle/src/jadeinterractionsimple/JadeInterractionSimple.java</file>
+            <file>file:/home/claire/NetBeansProjects/JadeInteractionPuzzle/src/jadeinterractionsimple/Controller/Environnement.java</file>
+            <file>file:/home/claire/NetBeansProjects/JadeInteractionPuzzle/src/jadeinterractionsimple/Agent/AStar.java</file>
         </group>
     </open-files>
 </project-private>
-=======
-<?xml version="1.0" encoding="UTF-8"?>
-<project-private xmlns="http://www.netbeans.org/ns/project-private/1">
-    <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
-    <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
-        <group>
-            <file>file:/C:/Users/Claire/Documents/NetBeansProjects/JadeInteractionPuzzle/src/jadeinterractionsimple/FormeAgent.java</file>
-            <file>file:/C:/Users/Claire/Documents/NetBeansProjects/JadeInteractionPuzzle/src/jadeinterractionsimple/Position.java</file>
-            <file>file:/C:/Users/Claire/Documents/NetBeansProjects/JadeInteractionPuzzle/src/jadeinterractionsimple/MoveMessage.java</file>
-            <file>file:/C:/Users/Claire/Documents/NetBeansProjects/JadeInteractionPuzzle/src/jadeinterractionsimple/JadeInterractionSimple.java</file>
-            <file>file:/C:/Users/Claire/Documents/NetBeansProjects/JadeInteractionPuzzle/src/jadeinterractionsimple/Gui.java</file>
-            <file>file:/C:/Users/Claire/Documents/NetBeansProjects/JadeInteractionPuzzle/src/jadeinterractionsimple/Environnement.java</file>
-        </group>
-    </open-files>
-</project-private>
->>>>>>> Stashed changes

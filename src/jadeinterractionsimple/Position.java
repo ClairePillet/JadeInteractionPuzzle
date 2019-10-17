@@ -12,8 +12,7 @@ import static java.lang.Math.abs;
  *
  * @author claire
  */
-public class Position implements Serializable 
-{
+public class Position implements Serializable {
 
     private int x;
     private int y;
@@ -47,16 +46,27 @@ public class Position implements Serializable
 
     @Override
     public boolean equals(Object o) {
-        if (getClass() != o.getClass()) {
-            return false;
-        }
+        if (o != null) {
+            if (getClass() != o.getClass()) {
+                return false;
+            }
 
-        Position posToTes = (Position) o;
-        if (posToTes.getX() == this.x && posToTes.getY() == this.y) {
+            Position posToTes = (Position) o;
+            if (posToTes.getX() == this.x && posToTes.getY() == this.y) {
 
-            return true;
+                return true;
+            }
+            //To change body of generated methods, choose Tools | Templates.
         }
-        return false; //To change body of generated methods, choose Tools | Templates.
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 5;
+        hash = 79 * hash + this.x;
+        hash = 79 * hash + this.y;
+        return hash;
     }
 
     @Override

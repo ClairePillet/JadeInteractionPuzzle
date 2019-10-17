@@ -35,7 +35,7 @@ public class JadeInterractionSimple {
         AgentController acA;
         AgentController acB;
 
-        Environnement env = new Environnement(5);
+        Environnement env = new Environnement(5,20);
 
         try {
             Object[] param = {env};
@@ -59,7 +59,8 @@ public class JadeInterractionSimple {
             acB.start();
             acB = mc.createNewAgent("H", FormeAgent.class.getName(), param);
             acB.start();
-acB = mc.createNewAgent("I", FormeAgent.class.getName(), param);
+            
+            acB = mc.createNewAgent("I", FormeAgent.class.getName(), param);
             acB.start();
             acB = mc.createNewAgent("J", FormeAgent.class.getName(), param);
             acB.start();
@@ -67,6 +68,33 @@ acB = mc.createNewAgent("I", FormeAgent.class.getName(), param);
             acB.start();
             acB = mc.createNewAgent("L", FormeAgent.class.getName(), param);
             acB.start();
+            
+            acB = mc.createNewAgent("M", FormeAgent.class.getName(), param);
+            acB.start();
+            acB = mc.createNewAgent("N", FormeAgent.class.getName(), param);
+            acB.start();
+            acB = mc.createNewAgent("O", FormeAgent.class.getName(), param);
+            acB.start();
+            acB = mc.createNewAgent("P", FormeAgent.class.getName(), param);
+            acB.start();
+            
+            acB = mc.createNewAgent("Q", FormeAgent.class.getName(), param);
+            acB.start();
+            acB = mc.createNewAgent("R", FormeAgent.class.getName(), param);
+            acB.start();
+            acB = mc.createNewAgent("S", FormeAgent.class.getName(), param);
+            acB.start();
+            acB = mc.createNewAgent("T", FormeAgent.class.getName(), param);
+            acB.start();
+            
+//            acB = mc.createNewAgent("U", FormeAgent.class.getName(), param);
+//            acB.start();
+////            acB = mc.createNewAgent("V", FormeAgent.class.getName(), param);
+//            acB.start();
+//            acB = mc.createNewAgent("W", FormeAgent.class.getName(), param);
+//            acB.start();
+//            acB = mc.createNewAgent("X", FormeAgent.class.getName(), param);
+//            acB.start();
         } catch (StaleProxyException ignored) {
         }
     }

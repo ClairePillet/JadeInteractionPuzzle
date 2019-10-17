@@ -33,7 +33,7 @@ import javax.swing.Timer;
  */
 public class Gui extends JFrame {
 
-    private Map<String, Position> positions;
+    private Map< Position,String> positions;
    
     private Image dbImage;
 
@@ -57,17 +57,18 @@ public class Gui extends JFrame {
 
         ActionListener taskPerformer = new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
-                canvas.repaint();
+                canvas.repaint(1);
             }
         };
 
-        new Timer(500, taskPerformer).start();
+        new Timer(10, taskPerformer).start();
 
     }
 
-  public  void moveForme(Map<String, Position> positions) {
+  public  void moveForme(Map< Position,String> positions) {
 
         this.positions = positions;
+        
     }
 
     public class painting_area extends JPanel {
@@ -80,16 +81,15 @@ public class Gui extends JFrame {
             if (positions!=null) {
                 Iterator i = positions.entrySet().iterator();
                 while (i.hasNext()) {
-                    try {
+                    
                         Map.Entry form = (Map.Entry) i.next();
-                        String name = (String) form.getKey();
-                        Position pos = (Position) form.getValue();
-                        g.drawImage(ImageIO.read(new File(name + ".jpg")), pos.getX() * 100 + 25, pos.getY() * 100 + 25,
-                                25,
-                                25, this);
-                    } catch (IOException ex) {
-                        Logger.getLogger(Gui.class.getName()).log(Level.SEVERE, null, ex);
-                    }
+                        String name = (String) form.getValue();
+                        Position pos = (Position) form.getKey();
+                        if(name.equals("NONE")){
+                            name=" ";
+                        }
+                         g.drawChars(name.toCharArray(), 0, 1, pos.getX() * 100 + 35, pos.getY() * 100 + 35);
+                 
                 }
             }
 
